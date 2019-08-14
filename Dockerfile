@@ -1,3 +1,15 @@
+FROM golang:latest AS builder
+
+WORKDIR /go/src/jdsn/
+
+COPY ./src /go/src/jdsn
+
+RUN make
+
+
+# ------------------------------------------------------------------------------
+
+
 FROM ubuntu:18.04
 
 # set temporary variables
@@ -51,9 +63,7 @@ ENV JAVA_OPTS "-Duser.timezone=Europe/Brussels"
 VOLUME ${home}
 WORKDIR ${home}
 
-#CMD /bin/bash
+COPY --from=builder /go/src/jdsn/jdsn /usr/local/bin/
 
-COPY src/jdsn /usr/local/bin/
-
-# XXX custom program to launch slave
+# custom launcher
 ENTRYPOINT ["/usr/local/bin/jdsn"]
